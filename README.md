@@ -132,31 +132,31 @@ sequenceDiagram
 
 ## Features
 
-### 🤖 Sage AI Co-Pilot
+###  Sage AI Co-Pilot
 - Conversational savings advisor grounded in live YO vault data
 - Auto-extracts risk profile, income, and goals from natural language
 - Personalized allocation recommendations (conservative / balanced / aggressive)
 - Yield projections, inflation protection advice, safety explanations
 - Quick-prompt chips for common questions
 
-### 🎯 Smart Onboarding
+###  Smart Onboarding
 - 4-step quiz: savings goal → risk tolerance → monthly savings → time horizon
 - Generates a personalized Sage recommendation on completion
 - Recommendation card on dashboard with live APY per vault and one-tap deposit buttons
 
-### 🏦 Live YO Vault Integration
+###  Live YO Vault Integration
 - Real deposit and redeem flows on Base (low gas, fast confirmations)
 - Live APY, TVL, and share price from YO API
 - Instant vs. queued redemption detection with request ID display
 - Support for yoUSD, yoETH, yoBTC
 
-### 📊 Portfolio & Analytics
+###  Portfolio & Analytics
 - Real-time portfolio value via `useUserBalances`
 - Per-vault P&L (realized + unrealized) via `useUserPerformance`
 - Full transaction history with Basescan links
 - Interactive yield projector (principal, monthly deposit, APY, time horizon)
 
-### 🔍 Transparency Dashboard
+###  Transparency Dashboard
 - Protocol allocation breakdown per vault (Morpho, Lido, Pendle percentages)
 - Animated allocation bars updated from live `useVaultAllocations` data
 - Every transaction verifiable onchain
