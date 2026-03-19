@@ -1,9 +1,8 @@
+// Sage Vault — global type declarations
 export {};
 
 declare global {
   interface Window {
-    ethereum?: {
-      request: (args: { method: string }) => Promise<string[]>;
-    };
+    ethereum?: Record<string, unknown>;
   }
 }
