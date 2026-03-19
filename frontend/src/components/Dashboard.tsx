@@ -6,6 +6,8 @@ import type { VaultStatsItem, UserBalances } from '@yo-protocol/core';
 import { formatUSD, formatAPY } from '../utils/format';
 import { useWallet } from '../hooks/useWallet';
 import { Link } from 'react-router-dom';
+import SageRecommendation from './SageRecommendation';
+import AllocationPanel from './AllocationPanel';
 
 export default function Dashboard() {
   const { address, isConnected } = useAccount();
@@ -14,13 +16,17 @@ export default function Dashboard() {
   const { stats, isLoading: statsLoading } = useVaultStats();
   const { balances } = useUserBalances(address);
 
-  const totalValue = (balances as UserBalances | undefined)?.totalBalanceUsd
-    ? parseFloat((balances as UserBalances).totalBalanceUsd)
+  const totalValue = parseFloat((balances as UserBalances | undefined)?.totalBalanceUsd ?? '0');
+  const vaultStats = stats as VaultStatsItem[];
+  const totalTvl = vaultStats?.reduce((acc, s) => acc + parseFloat(s.tvl?.formatted ?? '0'), 0) ?? 0;
+  const avgApy = vaultStats?.length
+    ? vaultStats.reduce((acc, s) => acc + parseFloat(s.yield?.['7d'] ?? '0'), 0) / vaultStats.length
     : 0;
-  const totalTvl = (stats as VaultStatsItem[])?.reduce((acc, s) => acc + parseFloat(s.tvl?.formatted ?? '0'), 0) ?? 0;
-  const avgApy = (stats as VaultStatsItem[])?.length
-    ? (stats as VaultStatsItem[]).reduce((acc, s) => acc + parseFloat(s.yield?.['7d'] ?? '0'), 0) / stats.length
-    : 0;
+
+  // Load Sage recommendation from onboarding
+  const savedRec = (() => {
+    try { return JSON.parse(localStorage.getItem('sage_recommendation') ?? 'null'); } catch { return null; }
+  })();
 
   if (!isConnected) {
     return (
@@ -67,6 +73,11 @@ export default function Dashboard() {
         ))}
       </div>
 
+      {/* Sage recommendation — shown after onboarding */}
+      {savedRec && (
+        <SageRecommendation risk={savedRec.risk} alloc={savedRec.alloc} monthly={savedRec.monthly} />
+      )}
+
       {/* Active positions */}
       <div>
         <div className="flex items-center justify-between mb-4">
@@ -101,9 +112,7 @@ export default function Dashboard() {
                 <p className="font-serif font-bold text-2xl text-accent-green mb-1">
                   {formatUSD(Number(pos.position.assets) / 1e6)}
                 </p>
-                <p className="text-xs text-text-muted">
-                  {pos.position.shares.toString().slice(0, 10)}... shares
-                </p>
+                <p className="text-xs text-text-muted">{pos.position.shares.toString().slice(0, 10)}... shares</p>
               </motion.div>
             ))}
           </div>
@@ -117,12 +126,16 @@ export default function Dashboard() {
         )}
       </div>
 
+      {/* Allocation transparency */}
+      <div className="grid md:grid-cols-2 gap-4">
+        <AllocationPanel vaultId="yoUSD" />
+        <AllocationPanel vaultId="yoETH" />
+      </div>
+
       {/* Quick actions */}
       <div className="grid sm:grid-cols-2 gap-4">
         <Link to="/sage" className="card flex items-center gap-4 hover:border-accent-green/40 cursor-pointer group">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-green to-accent-teal flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-            S
-          </div>
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-green to-accent-teal flex items-center justify-center text-white font-bold text-lg flex-shrink-0">S</div>
           <div>
             <h3 className="font-bold text-text-main group-hover:text-accent-green transition-colors">Chat with Sage AI</h3>
             <p className="text-sm text-text-muted">Get a personalized savings strategy</p>
@@ -130,9 +143,7 @@ export default function Dashboard() {
           <span className="ml-auto text-text-muted group-hover:text-accent-green transition-colors">→</span>
         </Link>
         <Link to="/portfolio" className="card flex items-center gap-4 hover:border-accent-green/40 cursor-pointer group">
-          <div className="w-12 h-12 rounded-xl bg-accent-green/10 border border-accent-green/30 flex items-center justify-center text-2xl flex-shrink-0">
-            📊
-          </div>
+          <div className="w-12 h-12 rounded-xl bg-accent-green/10 border border-accent-green/30 flex items-center justify-center text-2xl flex-shrink-0">📊</div>
           <div>
             <h3 className="font-bold text-text-main group-hover:text-accent-green transition-colors">Yield Projector</h3>
             <p className="text-sm text-text-muted">Simulate your savings growth</p>

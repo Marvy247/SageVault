@@ -5,13 +5,11 @@ import { useAccount } from 'wagmi';
 import type { VaultStatsItem, VaultSnapshot, VaultId } from '@yo-protocol/core';
 import type { Address } from 'viem';
 
-// useVaultStats — useVaults already returns VaultStatsItem[]
 export function useVaultStats(options?: { enabled?: boolean }) {
   const { vaults, isLoading, isError, error } = useVaults(options);
   return { stats: (vaults ?? []) as VaultStatsItem[], isLoading, isError, error };
 }
 
-// useVaultSnapshot — fetch single vault snapshot via YoClient API
 export function useVaultSnapshot(vault: Address | VaultId, options?: { enabled?: boolean }) {
   const client = useYoClient();
   const { chain } = useAccount();
@@ -33,7 +31,6 @@ export function useVaultSnapshot(vault: Address | VaultId, options?: { enabled?:
   return { snapshot: data as VaultSnapshot | undefined, isLoading, isError, error };
 }
 
-// useVaultSnapshots — fetch all vault snapshots
 export function useVaultSnapshots(options?: { enabled?: boolean }) {
   const client = useYoClient();
   const { chain } = useAccount();

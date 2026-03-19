@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Analytics } from '@vercel/analytics/react';
 import { Toaster } from 'react-hot-toast';
+import { useState, useEffect } from 'react';
 import { SageProvider } from './context/SageContext';
 import Navigation from './components/Navigation';
 import Landing from './components/Landing';
@@ -9,6 +10,7 @@ import Dashboard from './components/Dashboard';
 import Vaults from './components/Vaults';
 import SagePage from './components/SagePage';
 import Portfolio from './components/Portfolio';
+import Onboarding from './components/Onboarding';
 
 function PageWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -56,6 +58,32 @@ function Footer() {
   );
 }
 
+function AppShell() {
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const location = useLocation();
+
+  // Show onboarding when user first navigates to /dashboard without having completed it
+  useEffect(() => {
+    const onboarded = localStorage.getItem('sage_onboarded');
+    if (!onboarded && location.pathname === '/dashboard') {
+      setShowOnboarding(true);
+    }
+  }, [location.pathname]);
+
+  return (
+    <>
+      {showOnboarding && <Onboarding onComplete={() => setShowOnboarding(false)} />}
+      <div className="min-h-screen bg-app-bg grid-subtle">
+        <Navigation />
+        <main>
+          <AnimatedRoutes />
+        </main>
+        <Footer />
+      </div>
+    </>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -68,13 +96,7 @@ function App() {
             success: { iconTheme: { primary: '#059669', secondary: '#fff' } },
           }}
         />
-        <div className="min-h-screen bg-app-bg grid-subtle">
-          <Navigation />
-          <main>
-            <AnimatedRoutes />
-          </main>
-          <Footer />
-        </div>
+        <AppShell />
       </SageProvider>
     </BrowserRouter>
   );

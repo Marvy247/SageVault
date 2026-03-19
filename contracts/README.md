@@ -1,1 +1,0 @@
-Web3BridgeGarage contract deployed to: 0x793310d9254D801EF86f829264F04940139e9297
